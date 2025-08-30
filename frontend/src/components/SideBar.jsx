@@ -66,7 +66,7 @@ function Sidebar() {
     }, [input])
 
     return (
-        <div className={`lg:w-[30%] w-full h-full flex flex-col bg-gradient-to-b from-white to-gray-50 ${!selectedUser ? "block" : "hidden"} lg:block border-r border-gray-200 relative overflow-hidden`}>
+        <div className={`lg:w-[30%] w-full h-screen flex flex-col bg-gradient-to-b from-white to-gray-50 ${!selectedUser ? "block" : "hidden"} lg:block border-r border-gray-200 relative overflow-hidden`}>
             
             {/* Logout Button - Fixed position within sidebar */}
             <div 
@@ -78,7 +78,7 @@ function Sidebar() {
 
             {/* Search Results Overlay */}
             {input.length > 0 && (
-                <div className='absolute top-0 left-0 right-0 bottom-0 bg-white z-40 flex flex-col'>
+                <div className='absolute top-0 left-0 right-0 bottom-0 bg-white z-40 flex flex-col overflow-hidden'>
                     {/* Header with Search Bar */}
                     <div className='bg-gradient-to-r from-blue-500 to-blue-600 p-6 text-white flex-shrink-0'>
                         <div className='mb-4'>
@@ -233,82 +233,84 @@ function Sidebar() {
                 )}
             </div>
 
-            {/* Users List - Scrollable with custom scrollbar */}
-            <div className='flex-1 overflow-y-auto custom-scrollbar'>
-                <div className='p-4 pb-20'>
-                    {/* Section Header with user count */}
-                    <div className='flex items-center justify-between mb-4 px-2 sticky top-0 bg-gradient-to-b from-white to-gray-50 py-2 z-10'>
-                        <h3 className='text-sm font-semibold text-gray-500 uppercase tracking-wide'>
-                            All Conversations
-                        </h3>
-                        <span className='text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded-full'>
-                            {otherUsers?.length || 0} users
-                        </span>
-                    </div>
-
-                    {/* Loading state */}
-                    {loading && (
-                        <div className='flex items-center justify-center py-8'>
-                            <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500'></div>
-                            <span className='ml-3 text-gray-500'>Loading users...</span>
+            {/* Users List - Scrollable with fixed height and proper overflow handling */}
+            <div className='flex-1 min-h-0 overflow-hidden'>
+                <div className='h-full overflow-y-auto custom-scrollbar'>
+                    <div className='p-4 pb-24'>
+                        {/* Section Header with user count */}
+                        <div className='flex items-center justify-between mb-4 px-2 sticky top-0 bg-gradient-to-b from-white to-gray-50 py-2 z-10'>
+                            <h3 className='text-sm font-semibold text-gray-500 uppercase tracking-wide'>
+                                All Conversations
+                            </h3>
+                            <span className='text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded-full'>
+                                {otherUsers?.length || 0} users
+                            </span>
                         </div>
-                    )}
 
-                    {/* Users list */}
-                    <div className='space-y-2'>
-                        {otherUsers?.map((user) => (
-                            <div 
-                                key={user._id}
-                                className={`flex items-center gap-4 p-3 rounded-xl cursor-pointer transition-all duration-200 ${
-                                    selectedUser?._id === user._id 
-                                        ? 'bg-blue-50 border border-blue-200 shadow-sm' 
-                                        : 'hover:bg-gray-50 hover:shadow-sm'
-                                }`}
-                                onClick={() => dispatch(setSelectedUser(user))}
-                            >
-                                <div className='relative flex-shrink-0'>
-                                    <div className='w-12 h-12 rounded-full overflow-hidden bg-gray-100'>
-                                        <img src={user.image || dp} alt="" className='w-full h-full object-cover'/>
+                        {/* Loading state */}
+                        {loading && (
+                            <div className='flex items-center justify-center py-8'>
+                                <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500'></div>
+                                <span className='ml-3 text-gray-500'>Loading users...</span>
+                            </div>
+                        )}
+
+                        {/* Users list */}
+                        <div className='space-y-2'>
+                            {otherUsers?.map((user) => (
+                                <div 
+                                    key={user._id}
+                                    className={`flex items-center gap-4 p-3 rounded-xl cursor-pointer transition-all duration-200 ${
+                                        selectedUser?._id === user._id 
+                                            ? 'bg-blue-50 border border-blue-200 shadow-sm' 
+                                            : 'hover:bg-gray-50 hover:shadow-sm'
+                                    }`}
+                                    onClick={() => dispatch(setSelectedUser(user))}
+                                >
+                                    <div className='relative flex-shrink-0'>
+                                        <div className='w-12 h-12 rounded-full overflow-hidden bg-gray-100'>
+                                            <img src={user.image || dp} alt="" className='w-full h-full object-cover'/>
+                                        </div>
+                                        {onlineUsers?.includes(user._id) && (
+                                            <span className='absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-white shadow-sm animate-pulse'></span>
+                                        )}
                                     </div>
-                                    {onlineUsers?.includes(user._id) && (
-                                        <span className='absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-white shadow-sm animate-pulse'></span>
+                                    <div className='flex-1 min-w-0'>
+                                        <h3 className={`font-medium truncate ${
+                                            selectedUser?._id === user._id ? 'text-blue-900' : 'text-gray-900'
+                                        }`}>
+                                            {user.name || user.userName}
+                                        </h3>
+                                        <p className={`text-sm ${
+                                            selectedUser?._id === user._id ? 'text-blue-600' : 'text-gray-500'
+                                        }`}>
+                                            {onlineUsers?.includes(user._id) ? 'Online' : 'Offline'}
+                                        </p>
+                                    </div>
+                                    {selectedUser?._id === user._id && (
+                                        <div className='w-2 h-2 bg-blue-500 rounded-full flex-shrink-0'></div>
                                     )}
                                 </div>
-                                <div className='flex-1 min-w-0'>
-                                    <h3 className={`font-medium truncate ${
-                                        selectedUser?._id === user._id ? 'text-blue-900' : 'text-gray-900'
-                                    }`}>
-                                        {user.name || user.userName}
-                                    </h3>
-                                    <p className={`text-sm ${
-                                        selectedUser?._id === user._id ? 'text-blue-600' : 'text-gray-500'
-                                    }`}>
-                                        {onlineUsers?.includes(user._id) ? 'Online' : 'Offline'}
-                                    </p>
-                                </div>
-                                {selectedUser?._id === user._id && (
-                                    <div className='w-2 h-2 bg-blue-500 rounded-full flex-shrink-0'></div>
-                                )}
-                            </div>
-                        ))}
-                    </div>
-                    
-                    {/* Empty state */}
-                    {!loading && otherUsers?.length === 0 && (
-                        <div className='flex flex-col items-center justify-center py-12'>
-                            <div className='w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4'>
-                                <IoIosSearch className='w-8 h-8 text-gray-400'/>
-                            </div>
-                            <p className='text-gray-500 font-medium'>No conversations yet</p>
-                            <p className='text-sm text-gray-400 mt-1 text-center'>Search for users to start chatting</p>
-                            <button 
-                                className='mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors'
-                                onClick={fetchAllUsers}
-                            >
-                                Refresh Users
-                            </button>
+                            ))}
                         </div>
-                    )}
+                        
+                        {/* Empty state */}
+                        {!loading && otherUsers?.length === 0 && (
+                            <div className='flex flex-col items-center justify-center py-12'>
+                                <div className='w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4'>
+                                    <IoIosSearch className='w-8 h-8 text-gray-400'/>
+                                </div>
+                                <p className='text-gray-500 font-medium'>No conversations yet</p>
+                                <p className='text-sm text-gray-400 mt-1 text-center'>Search for users to start chatting</p>
+                                <button 
+                                    className='mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors'
+                                    onClick={fetchAllUsers}
+                                >
+                                    Refresh Users
+                                </button>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
 
@@ -324,30 +326,34 @@ function Sidebar() {
                 
                 .custom-scrollbar {
                     scrollbar-width: thin;
-                    scrollbar-color: #cbd5e0 #f7fafc;
+                    scrollbar-color: #9ca3af #f9fafb;
+                    scroll-behavior: smooth;
                 }
                 
                 .custom-scrollbar::-webkit-scrollbar {
-                    width: 6px;
+                    width: 8px;
                 }
                 
                 .custom-scrollbar::-webkit-scrollbar-track {
-                    background: #f7fafc;
-                    border-radius: 3px;
+                    background: #f9fafb;
+                    border-radius: 4px;
+                    margin: 4px 0;
                 }
                 
                 .custom-scrollbar::-webkit-scrollbar-thumb {
-                    background: #cbd5e0;
-                    border-radius: 3px;
-                    transition: background 0.2s ease;
+                    background: #d1d5db;
+                    border-radius: 4px;
+                    border: 1px solid #f9fafb;
+                    transition: all 0.2s ease;
                 }
                 
                 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-                    background: #a0aec0;
+                    background: #9ca3af;
+                    border-color: #e5e7eb;
                 }
                 
                 .custom-scrollbar::-webkit-scrollbar-thumb:active {
-                    background: #718096;
+                    background: #6b7280;
                 }
             `}</style>
         </div>
