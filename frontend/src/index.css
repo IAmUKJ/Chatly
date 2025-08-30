@@ -12,3 +12,18 @@ body {
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
 }
+
+/* Add this to your global CSS file or in a <style> tag in your Home component */
+html, body {
+    height: 100%;
+    overflow: hidden;
+}
+
+#root {
+    height: 100%;
+}
+
+.home-container {
+    height: 100vh;
+    overflow: hidden;
+}
