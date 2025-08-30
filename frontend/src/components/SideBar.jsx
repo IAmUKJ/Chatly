@@ -47,12 +47,12 @@ function Sidebar() {
     return (
         <div className={`lg:w-[30%] w-full h-full flex flex-col bg-gradient-to-b from-white to-gray-50 ${!selectedUser ? "block" : "hidden"} lg:block border-r border-gray-200 relative overflow-hidden`}>
             
-            {/* Logout Button - Fixed position on right side */}
+            {/* Logout Button - Fixed position within sidebar */}
             <div 
-                className='fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-r from-red-500 to-red-600 rounded-full flex justify-center items-center cursor-pointer shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 z-50'
+                className='absolute bottom-6 right-6 w-12 h-12 bg-gradient-to-r from-red-500 to-red-600 rounded-full flex justify-center items-center cursor-pointer shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 z-50'
                 onClick={handleLogOut}
             >
-                <BiLogOutCircle className='w-6 h-6 text-white'/>
+                <BiLogOutCircle className='w-5 h-5 text-white'/>
             </div>
 
             {/* Search Results Overlay */}
