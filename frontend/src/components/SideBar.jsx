@@ -45,11 +45,11 @@ function Sidebar() {
     }, [input])
 
     return (
-        <div className={`lg:w-[30%] w-full h-full flex flex-col bg-gradient-to-b from-white to-gray-50 ${!selectedUser ? "block" : "hidden"} lg:block border-r border-gray-200`}>
+        <div className={`lg:w-[30%] w-full h-full flex flex-col bg-gradient-to-b from-white to-gray-50 ${!selectedUser ? "block" : "hidden"} lg:block border-r border-gray-200 relative overflow-hidden`}>
             
-            {/* Logout Button - Fixed position */}
+            {/* Logout Button - Fixed position on right side */}
             <div 
-                className='fixed bottom-6 left-6 w-14 h-14 bg-gradient-to-r from-red-500 to-red-600 rounded-full flex justify-center items-center cursor-pointer shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 z-50'
+                className='fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-r from-red-500 to-red-600 rounded-full flex justify-center items-center cursor-pointer shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 z-50'
                 onClick={handleLogOut}
             >
                 <BiLogOutCircle className='w-6 h-6 text-white'/>
@@ -58,7 +58,7 @@ function Sidebar() {
             {/* Search Results Overlay */}
             {input.length > 0 && (
                 <div className='absolute top-0 left-0 right-0 bottom-0 bg-white z-40 flex flex-col'>
-                    <div className='p-4 border-b border-gray-200'>
+                    <div className='p-4 border-b border-gray-200 flex-shrink-0'>
                         <h3 className='text-lg font-semibold text-gray-800 mb-2'>Search Results</h3>
                         <div className='text-sm text-gray-500'>
                             {searchData?.length > 0 ? `${searchData.length} users found` : 'No matches found'}
@@ -77,7 +77,7 @@ function Sidebar() {
                                             setSearch(false);
                                         }}
                                     >
-                                        <div className='relative'>
+                                        <div className='relative flex-shrink-0'>
                                             <div className='w-12 h-12 rounded-full overflow-hidden bg-gray-100'>
                                                 <img src={user?.image || dp} alt="" className='w-full h-full object-cover'/>
                                             </div>
@@ -85,8 +85,8 @@ function Sidebar() {
                                                 <span className='absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-green-500 rounded-full border-2 border-white'></span>
                                             )}
                                         </div>
-                                        <div className='flex-1'>
-                                            <h3 className='font-medium text-gray-900'>{user?.name || user?.userName}</h3>
+                                        <div className='flex-1 min-w-0'>
+                                            <h3 className='font-medium text-gray-900 truncate'>{user?.name || user?.userName}</h3>
                                             <p className='text-sm text-gray-500'>
                                                 {onlineUsers?.includes(user?._id) ? 'Online' : 'Offline'}
                                             </p>
@@ -107,17 +107,17 @@ function Sidebar() {
                 </div>
             )}
 
-            {/* Header Section */}
-            <div className='bg-gradient-to-r from-blue-500 to-blue-600 p-6 text-white'>
+            {/* Header Section - Fixed */}
+            <div className='bg-gradient-to-r from-blue-500 to-blue-600 p-6 text-white flex-shrink-0'>
                 <div className='mb-6'>
                     <h1 className='text-2xl font-bold mb-1'>Chatly</h1>
                     <div className='flex items-center justify-between'>
-                        <div>
-                            <h2 className='text-lg font-semibold'>Hi, {userData?.name || "User"}!</h2>
+                        <div className='flex-1 min-w-0'>
+                            <h2 className='text-lg font-semibold truncate'>Hi, {userData?.name || "User"}!</h2>
                             <p className='text-blue-100 text-sm'>Ready to chat?</p>
                         </div>
                         <div 
-                            className='w-14 h-14 rounded-full overflow-hidden bg-white cursor-pointer shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105'
+                            className='w-14 h-14 rounded-full overflow-hidden bg-white cursor-pointer shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex-shrink-0 ml-4'
                             onClick={() => navigate("/profile")}
                         >
                             <img src={userData?.image || dp} alt="" className='w-full h-full object-cover'/>
@@ -164,8 +164,8 @@ function Sidebar() {
                 {!search && (
                     <div className='mt-4'>
                         <p className='text-blue-100 text-sm mb-3 font-medium'>Online Now</p>
-                        <div className='flex gap-3 overflow-x-auto pb-2'>
-                            {otherUsers?.filter(user => onlineUsers?.includes(user._id)).slice(0, 6).map((user) => (
+                        <div className='flex gap-3 overflow-x-auto pb-2 scrollbar-hide'>
+                            {otherUsers?.filter(user => onlineUsers?.includes(user._id)).slice(0, 8).map((user) => (
                                 <div 
                                     key={user._id}
                                     className='relative flex-shrink-0 cursor-pointer hover:scale-105 transition-transform duration-200' 
@@ -182,57 +182,70 @@ function Sidebar() {
                 )}
             </div>
 
-            {/* Users List */}
-            <div className='flex-1 overflow-y-auto p-4'>
-                <h3 className='text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4 px-2'>All Conversations</h3>
-                <div className='space-y-2'>
-                    {otherUsers?.map((user) => (
-                        <div 
-                            key={user._id}
-                            className={`flex items-center gap-4 p-3 rounded-xl cursor-pointer transition-all duration-200 ${
-                                selectedUser?._id === user._id 
-                                    ? 'bg-blue-50 border border-blue-200 shadow-sm' 
-                                    : 'hover:bg-gray-50 hover:shadow-sm'
-                            }`}
-                            onClick={() => dispatch(setSelectedUser(user))}
-                        >
-                            <div className='relative'>
-                                <div className='w-12 h-12 rounded-full overflow-hidden bg-gray-100'>
-                                    <img src={user.image || dp} alt="" className='w-full h-full object-cover'/>
+            {/* Users List - Scrollable */}
+            <div className='flex-1 overflow-y-auto'>
+                <div className='p-4 pb-20'>
+                    <h3 className='text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4 px-2 sticky top-0 bg-gradient-to-b from-white to-gray-50 py-2'>All Conversations</h3>
+                    <div className='space-y-2'>
+                        {otherUsers?.map((user) => (
+                            <div 
+                                key={user._id}
+                                className={`flex items-center gap-4 p-3 rounded-xl cursor-pointer transition-all duration-200 ${
+                                    selectedUser?._id === user._id 
+                                        ? 'bg-blue-50 border border-blue-200 shadow-sm' 
+                                        : 'hover:bg-gray-50 hover:shadow-sm'
+                                }`}
+                                onClick={() => dispatch(setSelectedUser(user))}
+                            >
+                                <div className='relative flex-shrink-0'>
+                                    <div className='w-12 h-12 rounded-full overflow-hidden bg-gray-100'>
+                                        <img src={user.image || dp} alt="" className='w-full h-full object-cover'/>
+                                    </div>
+                                    {onlineUsers?.includes(user._id) && (
+                                        <span className='absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-green-500 rounded-full border-2 border-white'></span>
+                                    )}
                                 </div>
-                                {onlineUsers?.includes(user._id) && (
-                                    <span className='absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-green-500 rounded-full border-2 border-white'></span>
+                                <div className='flex-1 min-w-0'>
+                                    <h3 className={`font-medium truncate ${
+                                        selectedUser?._id === user._id ? 'text-blue-900' : 'text-gray-900'
+                                    }`}>
+                                        {user.name || user.userName}
+                                    </h3>
+                                    <p className={`text-sm ${
+                                        selectedUser?._id === user._id ? 'text-blue-600' : 'text-gray-500'
+                                    }`}>
+                                        {onlineUsers?.includes(user._id) ? 'Online' : 'Offline'}
+                                    </p>
+                                </div>
+                                {selectedUser?._id === user._id && (
+                                    <div className='w-2 h-2 bg-blue-500 rounded-full flex-shrink-0'></div>
                                 )}
                             </div>
-                            <div className='flex-1 min-w-0'>
-                                <h3 className={`font-medium truncate ${
-                                    selectedUser?._id === user._id ? 'text-blue-900' : 'text-gray-900'
-                                }`}>
-                                    {user.name || user.userName}
-                                </h3>
-                                <p className={`text-sm ${
-                                    selectedUser?._id === user._id ? 'text-blue-600' : 'text-gray-500'
-                                }`}>
-                                    {onlineUsers?.includes(user._id) ? 'Online' : 'Offline'}
-                                </p>
-                            </div>
-                            {selectedUser?._id === user._id && (
-                                <div className='w-2 h-2 bg-blue-500 rounded-full'></div>
-                            )}
-                        </div>
-                    ))}
-                </div>
-                
-                {otherUsers?.length === 0 && (
-                    <div className='flex flex-col items-center justify-center py-12'>
-                        <div className='w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4'>
-                            <IoIosSearch className='w-8 h-8 text-gray-400'/>
-                        </div>
-                        <p className='text-gray-500 font-medium'>No conversations yet</p>
-                        <p className='text-sm text-gray-400 mt-1 text-center'>Search for users to start chatting</p>
+                        ))}
                     </div>
-                )}
+                    
+                    {otherUsers?.length === 0 && (
+                        <div className='flex flex-col items-center justify-center py-12'>
+                            <div className='w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4'>
+                                <IoIosSearch className='w-8 h-8 text-gray-400'/>
+                            </div>
+                            <p className='text-gray-500 font-medium'>No conversations yet</p>
+                            <p className='text-sm text-gray-400 mt-1 text-center'>Search for users to start chatting</p>
+                        </div>
+                    )}
+                </div>
             </div>
+
+            {/* Custom scrollbar styles */}
+            <style jsx>{`
+                .scrollbar-hide {
+                    -ms-overflow-style: none;
+                    scrollbar-width: none;
+                }
+                .scrollbar-hide::-webkit-scrollbar {
+                    display: none;
+                }
+            `}</style>
         </div>
     )
 }
