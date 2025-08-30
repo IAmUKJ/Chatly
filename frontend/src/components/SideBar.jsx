@@ -58,9 +58,37 @@ function Sidebar() {
             {/* Search Results Overlay */}
             {input.length > 0 && (
                 <div className='absolute top-0 left-0 right-0 bottom-0 bg-white z-40 flex flex-col'>
-                    <div className='p-4 border-b border-gray-200 flex-shrink-0'>
-                        <h3 className='text-lg font-semibold text-gray-800 mb-2'>Search Results</h3>
-                        <div className='text-sm text-gray-500'>
+                    {/* Header with Search Bar */}
+                    <div className='bg-gradient-to-r from-blue-500 to-blue-600 p-6 text-white flex-shrink-0'>
+                        <div className='mb-4'>
+                            <h1 className='text-2xl font-bold mb-1'>Chatly</h1>
+                            <h3 className='text-lg font-semibold text-white mb-2'>Search Results</h3>
+                        </div>
+
+                        {/* Search Bar */}
+                        <div className='relative'>
+                            <IoIosSearch className='absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400'/>
+                            <input 
+                                type="text" 
+                                placeholder='Search users...' 
+                                className='w-full h-12 bg-white rounded-xl pl-12 pr-12 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-300'
+                                onChange={(e) => setInput(e.target.value)} 
+                                value={input}
+                                autoFocus
+                            />
+                            <button
+                                className='absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600'
+                                onClick={() => {
+                                    setSearch(false);
+                                    setInput("");
+                                    dispatch(setSearchData([]));
+                                }}
+                            >
+                                <RxCross2 className='w-5 h-5'/>
+                            </button>
+                        </div>
+
+                        <div className='text-blue-100 text-sm mt-3'>
                             {searchData?.length > 0 ? `${searchData.length} users found` : 'No matches found'}
                         </div>
                     </div>
