@@ -99,11 +99,9 @@ function MessageArea() {
                                     <div className='w-12 h-12 rounded-full overflow-hidden bg-white shadow-md ring-2 ring-white/20'>
                                         <img src={selectedUser?.image || dp} alt="" className='w-full h-full object-cover'/>
                                     </div>
-                                    <div className='absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-green-500 rounded-full border-2 border-white shadow-sm'></div>
                                 </div>
                                 <div className='flex flex-col min-w-0'>
                                     <h1 className='text-white font-semibold text-lg leading-tight truncate'>{selectedUser?.name || "User"}</h1>
-                                    <p className='text-blue-100 text-sm'>Online</p>
                                 </div>
                             </div>
                         </div>

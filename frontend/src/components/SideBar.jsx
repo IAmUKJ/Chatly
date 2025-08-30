@@ -14,7 +14,26 @@ function Sidebar() {
     let {userData, otherUsers, selectedUser, onlineUsers, searchData} = useSelector(state => state.user)
     let [search, setSearch] = useState(false)
     let [input, setInput] = useState("")
+    let [loading, setLoading] = useState(false)
     let dispatch = useDispatch()
+
+    // Fetch all users on component mount
+    const fetchAllUsers = async () => {
+        try {
+            setLoading(true)
+            let result = await axios.get(`${serverUrl}/api/user/all`, {withCredentials: true})
+            dispatch(setOtherUsersData(result.data))
+        } catch(error) {
+            console.log('Error fetching users:', error)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    // Initial fetch of all users
+    useEffect(() => {
+        fetchAllUsers()
+    }, [])
 
     const handleLogOut = async () => {
         try {
@@ -41,6 +60,8 @@ function Sidebar() {
     useEffect(() => {
         if(input) {
             handleSearch()
+        } else {
+            dispatch(setSearchData([]))
         }
     }, [input])
 
@@ -92,7 +113,9 @@ function Sidebar() {
                             {searchData?.length > 0 ? `${searchData.length} users found` : 'No matches found'}
                         </div>
                     </div>
-                    <div className='flex-1 overflow-y-auto p-4'>
+                    
+                    {/* Search Results - Scrollable */}
+                    <div className='flex-1 overflow-y-auto custom-scrollbar p-4'>
                         {searchData?.length > 0 ? (
                             <div className='space-y-3'>
                                 {searchData.map((user) => (
@@ -110,7 +133,7 @@ function Sidebar() {
                                                 <img src={user?.image || dp} alt="" className='w-full h-full object-cover'/>
                                             </div>
                                             {onlineUsers?.includes(user?._id) && (
-                                                <span className='absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-green-500 rounded-full border-2 border-white'></span>
+                                                <span className='absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-white shadow-sm animate-pulse'></span>
                                             )}
                                         </div>
                                         <div className='flex-1 min-w-0'>
@@ -191,7 +214,7 @@ function Sidebar() {
                 {/* Online Users Quick Access */}
                 {!search && (
                     <div className='mt-4'>
-                        <p className='text-blue-100 text-sm mb-3 font-medium'>Online Now</p>
+                        <p className='text-blue-100 text-sm mb-3 font-medium'>Online Now ({otherUsers?.filter(user => onlineUsers?.includes(user._id)).length})</p>
                         <div className='flex gap-3 overflow-x-auto pb-2 scrollbar-hide'>
                             {otherUsers?.filter(user => onlineUsers?.includes(user._id)).slice(0, 8).map((user) => (
                                 <div 
@@ -210,10 +233,28 @@ function Sidebar() {
                 )}
             </div>
 
-            {/* Users List - Scrollable */}
-            <div className='flex-1 overflow-y-auto'>
+            {/* Users List - Scrollable with custom scrollbar */}
+            <div className='flex-1 overflow-y-auto custom-scrollbar'>
                 <div className='p-4 pb-20'>
-                    <h3 className='text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4 px-2 sticky top-0 bg-gradient-to-b from-white to-gray-50 py-2'>All Conversations</h3>
+                    {/* Section Header with user count */}
+                    <div className='flex items-center justify-between mb-4 px-2 sticky top-0 bg-gradient-to-b from-white to-gray-50 py-2 z-10'>
+                        <h3 className='text-sm font-semibold text-gray-500 uppercase tracking-wide'>
+                            All Conversations
+                        </h3>
+                        <span className='text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded-full'>
+                            {otherUsers?.length || 0} users
+                        </span>
+                    </div>
+
+                    {/* Loading state */}
+                    {loading && (
+                        <div className='flex items-center justify-center py-8'>
+                            <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500'></div>
+                            <span className='ml-3 text-gray-500'>Loading users...</span>
+                        </div>
+                    )}
+
+                    {/* Users list */}
                     <div className='space-y-2'>
                         {otherUsers?.map((user) => (
                             <div 
@@ -230,7 +271,7 @@ function Sidebar() {
                                         <img src={user.image || dp} alt="" className='w-full h-full object-cover'/>
                                     </div>
                                     {onlineUsers?.includes(user._id) && (
-                                        <span className='absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-green-500 rounded-full border-2 border-white'></span>
+                                        <span className='absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-white shadow-sm animate-pulse'></span>
                                     )}
                                 </div>
                                 <div className='flex-1 min-w-0'>
@@ -252,13 +293,20 @@ function Sidebar() {
                         ))}
                     </div>
                     
-                    {otherUsers?.length === 0 && (
+                    {/* Empty state */}
+                    {!loading && otherUsers?.length === 0 && (
                         <div className='flex flex-col items-center justify-center py-12'>
                             <div className='w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4'>
                                 <IoIosSearch className='w-8 h-8 text-gray-400'/>
                             </div>
                             <p className='text-gray-500 font-medium'>No conversations yet</p>
                             <p className='text-sm text-gray-400 mt-1 text-center'>Search for users to start chatting</p>
+                            <button 
+                                className='mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors'
+                                onClick={fetchAllUsers}
+                            >
+                                Refresh Users
+                            </button>
                         </div>
                     )}
                 </div>
@@ -272,6 +320,34 @@ function Sidebar() {
                 }
                 .scrollbar-hide::-webkit-scrollbar {
                     display: none;
+                }
+                
+                .custom-scrollbar {
+                    scrollbar-width: thin;
+                    scrollbar-color: #cbd5e0 #f7fafc;
+                }
+                
+                .custom-scrollbar::-webkit-scrollbar {
+                    width: 6px;
+                }
+                
+                .custom-scrollbar::-webkit-scrollbar-track {
+                    background: #f7fafc;
+                    border-radius: 3px;
+                }
+                
+                .custom-scrollbar::-webkit-scrollbar-thumb {
+                    background: #cbd5e0;
+                    border-radius: 3px;
+                    transition: background 0.2s ease;
+                }
+                
+                .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+                    background: #a0aec0;
+                }
+                
+                .custom-scrollbar::-webkit-scrollbar-thumb:active {
+                    background: #718096;
                 }
             `}</style>
         </div>
