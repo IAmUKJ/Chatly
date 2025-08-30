@@ -17,7 +17,7 @@ import { setMessages } from '../redux/messageSlice';
 
 function MessageArea() {
     let navigate = useNavigate()
-    let {selectedUser, userData, socket} = useSelector(state => state.user)
+    let {selectedUser, userData, socket, onlineUsers} = useSelector(state => state.user)
     let dispatch = useDispatch()
     let [showPicker, setShowPicker] = useState(false)
     let [input, setInput] = useState("")
@@ -26,6 +26,9 @@ function MessageArea() {
     let image = useRef()
     let messagesEndRef = useRef(null)
     let {messages} = useSelector(state => state.message)
+
+    // Check if selected user is online
+    const isSelectedUserOnline = onlineUsers?.includes(selectedUser?._id)
 
     const handleImage = (e) => {
         let file = e.target.files[0]
@@ -96,12 +99,31 @@ function MessageArea() {
                                 onClick={() => navigate("/profile")}
                             >
                                 <div className='relative flex-shrink-0'>
-                                    <div className='w-12 h-12 rounded-full overflow-hidden bg-white shadow-md ring-2 ring-white/20'>
+                                    <div className={`w-12 h-12 rounded-full overflow-hidden bg-white shadow-md ring-2 ${
+                                        isSelectedUserOnline 
+                                            ? 'ring-green-200/50' 
+                                            : 'ring-white/20'
+                                    }`}>
                                         <img src={selectedUser?.image || dp} alt="" className='w-full h-full object-cover'/>
                                     </div>
+                                    
+                                    {/* Online indicator - only show if user is online */}
+                                    {isSelectedUserOnline && (
+                                        <div className='absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-400 rounded-full border-2 border-white shadow-sm animate-pulse'></div>
+                                    )}
+                                    
+                                    {/* Offline indicator - show gray dot when user is offline */}
+                                    {!isSelectedUserOnline && (
+                                        <div className='absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-gray-500 rounded-full border-2 border-white shadow-sm'></div>
+                                    )}
                                 </div>
                                 <div className='flex flex-col min-w-0'>
                                     <h1 className='text-white font-semibold text-lg leading-tight truncate'>{selectedUser?.name || "User"}</h1>
+                                    <p className={`text-sm ${
+                                        isSelectedUserOnline ? 'text-green-200' : 'text-gray-300'
+                                    }`}>
+                                        {isSelectedUserOnline ? 'Online' : 'Offline'}
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -131,7 +153,18 @@ function MessageArea() {
                                     </div>
                                     <h3 className='text-xl font-semibold text-gray-700 mb-3'>Start a conversation</h3>
                                     <p className='text-gray-500 max-w-sm leading-relaxed'>Send a message to begin chatting with <span className='font-medium text-blue-600'>{selectedUser?.name}</span></p>
-                                    <div className='mt-6 flex items-center gap-2 text-sm text-gray-400'>
+                                    
+                                    {/* Online status in empty state */}
+                                    <div className='mt-6 flex items-center gap-2 text-sm'>
+                                        <div className={`w-2 h-2 rounded-full ${
+                                            isSelectedUserOnline ? 'bg-green-500 animate-pulse' : 'bg-gray-400'
+                                        }`}></div>
+                                        <span className={isSelectedUserOnline ? 'text-green-600' : 'text-gray-400'}>
+                                            {selectedUser?.name} is {isSelectedUserOnline ? 'online' : 'offline'}
+                                        </span>
+                                    </div>
+                                    
+                                    <div className='mt-2 flex items-center gap-2 text-sm text-gray-400'>
                                         <div className='w-2 h-2 bg-green-500 rounded-full'></div>
                                         <span>Messages are end-to-end encrypted</span>
                                     </div>
@@ -206,7 +239,7 @@ function MessageArea() {
                                 {/* Text Input */}
                                 <input 
                                     type="text" 
-                                    placeholder='Type a message...' 
+                                    placeholder={`Message ${selectedUser?.name}...`}
                                     className='flex-1 bg-transparent outline-none text-gray-700 placeholder-gray-500 py-1 text-sm'
                                     onChange={(e) => setInput(e.target.value)} 
                                     value={input}

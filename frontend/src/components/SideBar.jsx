@@ -66,7 +66,7 @@ function Sidebar() {
     }, [input])
 
     return (
-        <div className={`lg:w-[30%] w-full h-full flex flex-col bg-gradient-to-b from-white to-gray-50 ${!selectedUser ? "block" : "hidden"} lg:block border-r border-gray-200 relative overflow-hidden`}>
+        <div className={`lg:w-[30%] w-full h-screen flex flex-col bg-gradient-to-b from-white to-gray-50 ${!selectedUser ? "block" : "hidden"} lg:block border-r border-gray-200 relative`}>
             
             {/* Logout Button - Fixed position within sidebar */}
             <div 
@@ -233,9 +233,9 @@ function Sidebar() {
                 )}
             </div>
 
-            {/* Users List - Scrollable with custom scrollbar */}
-            <div className='flex-1 overflow-y-auto custom-scrollbar'>
-                <div className='p-4 pb-20'>
+            {/* Users List - Scrollable with fixed height */}
+            <div className='flex-1 overflow-y-auto min-h-0 custom-scrollbar'>
+                <div className='p-4 pb-24'>
                     {/* Section Header with user count */}
                     <div className='flex items-center justify-between mb-4 px-2 sticky top-0 bg-gradient-to-b from-white to-gray-50 py-2 z-10'>
                         <h3 className='text-sm font-semibold text-gray-500 uppercase tracking-wide'>
@@ -324,30 +324,34 @@ function Sidebar() {
                 
                 .custom-scrollbar {
                     scrollbar-width: thin;
-                    scrollbar-color: #cbd5e0 #f7fafc;
+                    scrollbar-color: #9ca3af #f9fafb;
+                    scroll-behavior: smooth;
                 }
                 
                 .custom-scrollbar::-webkit-scrollbar {
-                    width: 6px;
+                    width: 8px;
                 }
                 
                 .custom-scrollbar::-webkit-scrollbar-track {
-                    background: #f7fafc;
-                    border-radius: 3px;
+                    background: #f9fafb;
+                    border-radius: 4px;
+                    margin: 4px 0;
                 }
                 
                 .custom-scrollbar::-webkit-scrollbar-thumb {
-                    background: #cbd5e0;
-                    border-radius: 3px;
-                    transition: background 0.2s ease;
+                    background: #d1d5db;
+                    border-radius: 4px;
+                    border: 1px solid #f9fafb;
+                    transition: all 0.2s ease;
                 }
                 
                 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-                    background: #a0aec0;
+                    background: #9ca3af;
+                    border-color: #e5e7eb;
                 }
                 
                 .custom-scrollbar::-webkit-scrollbar-thumb:active {
-                    background: #718096;
+                    background: #6b7280;
                 }
             `}</style>
         </div>
