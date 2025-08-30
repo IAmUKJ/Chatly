@@ -133,7 +133,7 @@ function Sidebar() {
                                                 <img src={user?.image || dp} alt="" className='w-full h-full object-cover'/>
                                             </div>
                                             {onlineUsers?.includes(user?._id) && (
-                                                <span className='absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-white shadow-sm animate-pulse'></span>
+                                                <span className='absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-green-500 rounded-full border-2 border-white'></span>
                                             )}
                                         </div>
                                         <div className='flex-1 min-w-0'>
@@ -271,7 +271,7 @@ function Sidebar() {
                                         <img src={user.image || dp} alt="" className='w-full h-full object-cover'/>
                                     </div>
                                     {onlineUsers?.includes(user._id) && (
-                                        <span className='absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-white shadow-sm animate-pulse'></span>
+                                        <span className='absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-green-500 rounded-full border-2 border-white'></span>
                                     )}
                                 </div>
                                 <div className='flex-1 min-w-0'>
