@@ -64,7 +64,7 @@ function Profile(){
             </div>
 
             {/* Main content */}
-            <div className='flex flex-col items-center justify-center min-h-screen px-4 py-20'>
+            <div className='flex flex-col items-center justify-start md:justify-center min-h-screen px-4 py-20'>
                 {/* Header */}
                 <div className='text-center mb-8'>
                     <h1 className='text-4xl md:text-5xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-2'>
@@ -74,7 +74,7 @@ function Profile(){
                 </div>
 
                 {/* Profile card */}
-                <div className='w-full max-w-md'>
+                <div className='w-full max-w-md mb-8'>
                     <div className='bg-white/70 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8 relative overflow-hidden'>
                         {/* Card background gradient */}
                         <div className='absolute inset-0 bg-gradient-to-br from-white/40 to-white/10 pointer-events-none'></div>
